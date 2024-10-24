@@ -5,7 +5,8 @@
  */
 // ignore_for_file: INVALID_USE_OF_PROTECTED_MEMBER
 // ignore_for_file: INVALID_USE_OF_VISIBLE_FOR_TESTING_MEMBER
-import 'package:flutter/physics.dart';
+import 'dart:ui';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math' as math;
@@ -86,7 +87,6 @@ class RefreshPhysics extends ScrollPhysics {
 
   @override
   bool shouldAcceptUserOffset(ScrollMetrics position) {
-    // TODO: implement shouldAcceptUserOffset
     if (parent is NeverScrollableScrollPhysics) {
       return false;
     }
@@ -98,7 +98,6 @@ class RefreshPhysics extends ScrollPhysics {
   // will lead to whether the newPhysics should replace oldPhysics,If flutter can provide a method such as "shouldUpdate",
   // It can work perfectly.
   @override
-  // TODO: implement runtimeType
   Type get runtimeType {
     if (updateFlag == 0) {
       return RefreshPhysics;
@@ -109,7 +108,6 @@ class RefreshPhysics extends ScrollPhysics {
 
   @override
   double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
-    // TODO: implement applyPhysicsToUserOffset
     viewportRender ??=
         findViewport(controller!.position?.context.storageContext);
     if (controller!.headerMode!.value == RefreshStatus.twoLeveling) {
@@ -263,7 +261,6 @@ class RefreshPhysics extends ScrollPhysics {
   @override
   Simulation? createBallisticSimulation(
       ScrollMetrics position, double velocity) {
-    // TODO: implement createBallisticSimulation
     viewportRender ??=
         findViewport(controller!.position?.context.storageContext);
 
@@ -291,13 +288,19 @@ class RefreshPhysics extends ScrollPhysics {
         position: position.pixels,
         // -1.0 avoid stop springing back ,and release gesture
         velocity: velocity * 0.91,
-        // TODO(abarth): We should move this constant closer to the drag end.
         leadingExtent: position.minScrollExtent,
         trailingExtent:
             controller!.headerMode!.value == RefreshStatus.twoLeveling
                 ? 0.0
                 : position.maxScrollExtent,
-        tolerance: tolerance,
+        tolerance: toleranceFor(FixedScrollMetrics(
+          minScrollExtent: null,
+          maxScrollExtent: null,
+          pixels: null,
+          viewportDimension: null,
+          axisDirection: AxisDirection.down,
+          devicePixelRatio: PlatformDispatcher.instance.views.first.devicePixelRatio,
+        )),
       );
     }
     return super.createBallisticSimulation(position, velocity);
